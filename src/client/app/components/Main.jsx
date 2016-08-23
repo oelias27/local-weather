@@ -4,15 +4,16 @@ import * as WeatherActions from './../actions/WeatherActions.js';
 
 import LocationForm from './LocationForm.jsx';
 import WeatherData from './WeatherData.jsx';
+import Error from './Error.jsx';
 
 export default class Main extends React.Component {
   constructor() {
     super();
     this.state = {
-      status: WeatherStore.getStatus(),
+      status: '',
       zip: '',
       weather: {},
-      iconText: 'wi wi-sunny'
+      iconText: 'wi wi-sunny',
     }
   }
 
@@ -31,6 +32,9 @@ export default class Main extends React.Component {
       navigator.geolocation.getCurrentPosition(function(position) {
         WeatherActions.getGeolocation(position.coords.longitude, position.coords.latitude);
       })
+    }
+    else {
+      this.status = false;
     }
   }
 
@@ -51,7 +55,17 @@ export default class Main extends React.Component {
   }
 
   render () {
-    let weatherDisplay = this.state.status == true ? <WeatherData iconText={this.state.iconText} weatherData={this.state.weather} /> : null;
+    let weatherDisplay;
+
+    if (this.state.status === true) {
+      weatherDisplay = <WeatherData iconText={this.state.iconText} weatherData={this.state.weather} />
+    }
+    else if (this.state.status === false) {
+      weatherDisplay = <Error />
+    }
+    else {
+      weatherDisplay = null;
+    }
 
     return (
       <div id="main">

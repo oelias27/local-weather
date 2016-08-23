@@ -5,7 +5,7 @@ export default class WeatherData extends React.Component {
   render () {
 
     return (
-      <div id="weatherbox">
+      <div className="weatherbox">
         <i className={this.props.iconText}></i>
         <p id="city">{this.props.weatherData.location}</p>
         <div>

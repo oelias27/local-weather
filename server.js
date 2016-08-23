@@ -7,6 +7,7 @@ var app = express();
 var port = process.env.PORT;
 var gmapsAPIKey =  process.env.GMAPSAPIKEY;
 var forecastAPIKey = process.env.FORECASTAPIKEY;
+
 app.use(express.static('./src/client'));
 app.use(bodyParser());
 

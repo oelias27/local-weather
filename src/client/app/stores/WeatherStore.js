@@ -4,7 +4,7 @@ import dispatcher from './../dispatcher.js';
 class WeatherStore extends EventEmitter {
   constructor() {
     super();
-    this.dataLoaded = false;
+    this.dataLoaded = '';
     this.iconText = '';
     this.weatherData = {};
   }
@@ -15,6 +15,10 @@ class WeatherStore extends EventEmitter {
 
   getIconText() {
     return this.iconText;
+  }
+
+  getWeatherData() {
+    return this.weatherData;
   }
 
   getWeather(location) {
@@ -29,6 +33,9 @@ class WeatherStore extends EventEmitter {
         this.dataLoaded = true;
         this.iconText = this.getIconCode(data.icon);
         this.emit('change');
+      }.bind(this),
+      error: function() {
+        this.dataLoaded = false
       }.bind(this)
     })
   }
@@ -46,6 +53,9 @@ class WeatherStore extends EventEmitter {
         this.dataLoaded = true;
         this.iconText = this.getIconCode(data.icon);
         this.emit('change');
+      }.bind(this),
+      error: function() {
+        this.dataLoaded = false
       }.bind(this)
     })
   }
@@ -97,10 +107,6 @@ class WeatherStore extends EventEmitter {
         return 'wi wi-cloudy'
       }
     }
-  }
-
-  getWeatherData() {
-    return this.weatherData;
   }
 
   handleActions(action) {
