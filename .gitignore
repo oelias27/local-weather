@@ -1,2 +1,3 @@
 node_modules
 devServer.js
+src/client/public

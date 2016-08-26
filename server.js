@@ -47,6 +47,8 @@ app.post('/weather', function(req, res) {
           console.log(err)
         }
         var location = JSON.parse(locationData.text);
+        var locationName = location.results[0].formatted_address.substring(0, location.results[0].formatted_address.indexOf(','));
+
         if (location.status == 'OK') {
 
           request.get('https://api.forecast.io/forecast/' + forecastAPIKey + '/' + location.results[0].geometry.location.lat + ',' + location.results[0].geometry.location.lng)
@@ -56,7 +58,7 @@ app.post('/weather', function(req, res) {
               }
               var parsed = JSON.parse(data.text)
               res.json({
-                location: location.results[0].address_components[1].long_name,
+                location: locationName,
                 current: parsed.currently.summary,
                 temp: parsed.currently.temperature,
                 icon: parsed.currently.icon

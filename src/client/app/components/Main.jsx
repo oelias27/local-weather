@@ -35,7 +35,7 @@ export default class Main extends React.Component {
     }
     else {
       this.setState({
-        status: false;
+        status: false
       })
     }
   }
