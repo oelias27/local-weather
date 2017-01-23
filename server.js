@@ -1,14 +1,16 @@
-var express = require('express');
-var request = require('superagent');
-var bodyParser = require('body-parser');
+const express = require('express');
+const request = require('superagent');
+const bodyParser = require('body-parser');
+const morgan = require('morgan')
 
-var app = express();
+const app = express();
 
-var port = process.env.PORT;
-var gmapsAPIKey =  process.env.GMAPSAPIKEY;
-var forecastAPIKey = process.env.FORECASTAPIKEY;
+const port = process.env.PORT;
+const gmapsAPIKey =  process.env.GMAPSAPIKEY;
+const forecastAPIKey = process.env.FORECASTAPIKEY;
 
 app.use(express.static('./src/client'));
+app.use(morgan('combined', { skip: (req, res) => {return res.statusCode < 400}}))
 app.use(bodyParser());
 
 app.get('/', function(req, res) {
@@ -22,14 +24,15 @@ app.post('/weather', function(req, res) {
         if (err) {
           console.log(err)
         }
-        var location = JSON.parse(locationData.text);
+
+        let location = JSON.parse(locationData.text);
 
         request.get('https://api.forecast.io/forecast/' + forecastAPIKey + '/' + req.body.lon + ',' + req.body.lat)
           .end(function(err, data) {
             if (err) {
               console.log(err)
             }
-            var parsed = JSON.parse(data.text)
+            let parsed = JSON.parse(data.text)
             res.json({
               location: location.results[0].address_components[1].long_name,
               current: parsed.currently.summary,
@@ -38,7 +41,6 @@ app.post('/weather', function(req, res) {
             })
           })
       })
-
   }
   else if (req.body.location) {
     request.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + req.body.location + '&key=' + gmapsAPIKey)
@@ -46,8 +48,8 @@ app.post('/weather', function(req, res) {
         if (err) {
           console.log(err)
         }
-        var location = JSON.parse(locationData.text);
-        var locationName = location.results[0].formatted_address.substring(0, location.results[0].formatted_address.indexOf(','));
+        let location = JSON.parse(locationData.text);
+        let locationName = location.results[0].formatted_address.substring(0, location.results[0].formatted_address.indexOf(','));
 
         if (location.status == 'OK') {
 
@@ -56,7 +58,7 @@ app.post('/weather', function(req, res) {
               if (err) {
                 console.log(err)
               }
-              var parsed = JSON.parse(data.text)
+              let parsed = JSON.parse(data.text)
               res.json({
                 location: locationName,
                 current: parsed.currently.summary,
@@ -70,9 +72,6 @@ app.post('/weather', function(req, res) {
           }
       })
   }
-
 })
 
-app.listen(port, function() {
-  console.log('Server running on', port)
-})
+app.listen(port)
