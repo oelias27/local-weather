@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import Request from 'superagent';
 import dispatcher from './../dispatcher.js';
 
 class WeatherStore extends EventEmitter {
@@ -22,41 +23,38 @@ class WeatherStore extends EventEmitter {
   }
 
   getWeather(location) {
-    $.ajax({
-      type: "POST",
-      url: '/weather',
-      data: {
-        location: location
-      },
-      success: function(data) {
-        this.weatherData = data;
-        this.dataLoaded = true;
-        this.iconText = this.getIconCode(data.icon);
-        this.emit('change');
-      }.bind(this),
-      error: function() {
-        this.dataLoaded = false
-      }.bind(this)
+
+    Request.post('/weather')
+    .send({location: location})
+    .end((err, data) => {
+      if (err) {
+        this.dataLoaded = false;
+      }
+
+      let weatherData = JSON.parse(data.text)
+
+      this.weatherData = weatherData;
+      this.dataLoaded = true;
+      this.iconText = this.getIconCode(weatherData.icon);
+      this.emit('change');
     })
   }
 
   getGeolocation(lat, lon) {
-    $.ajax({
-      type: 'POST',
-      url: '/weather',
-      data: {
-        lat: lat,
-        lon: lon
-      },
-      success: function(data) {
-        this.weatherData = data;
-        this.dataLoaded = true;
-        this.iconText = this.getIconCode(data.icon);
-        this.emit('change');
-      }.bind(this),
-      error: function() {
-        this.dataLoaded = false
-      }.bind(this)
+
+    Request.post('/weather')
+    .send({lat, lon})
+    .end((err, data) => {
+      if (err) {
+        this.dataLoaded = false;
+      }
+
+      let weatherData = JSON.parse(data.text)
+
+      this.weatherData = weatherData;
+      this.dataLoaded = true;
+      this.iconText = this.getIconCode(weatherData.icon);
+      this.emit('change');
     })
   }
 
